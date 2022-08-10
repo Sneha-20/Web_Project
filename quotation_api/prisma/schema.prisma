@@ -1,0 +1,300 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
+}
+
+//sqlite
+// datasource db {
+//   provider = "sqlite"
+//   url      = "file:./dev.db"
+// }
+//mysql
+
+datasource db {
+  provider = "mysql"
+  //url      = 'mysql:env("USER"):env("PASSWORD")@env("HOST"):env("PORT")/env("DATABASE")'
+  url      = env("DATABASE_URL")
+//  url      = "mysql://phpmyadmin:ajay@localhost:3306/restapi"
+//  url      = ${process.env.DATABASE_URL}
+}
+
+model Role {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  level                       Int
+  active                      Boolean               @default(true)
+  createdAt                   DateTime              @default(now())
+  user                        User[]
+}
+
+model User {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                
+  username                    String                @unique
+  password                    String
+  active                      Boolean               @default(true)
+  createdAt                   DateTime              @default(now())
+
+  roleId                      Int
+  role                        Role                  @relation(fields: [roleId], references: [id])
+}
+
+model State {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  code                        String
+  active                      Boolean               @default(true)
+  createdAt                   DateTime              @default(now())
+}
+
+model Company {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  address                     String?
+  city                        String?
+  district                    String?
+  state                       String?
+  pin                         String?
+  country                     String?
+  
+  mobile1                     String?
+  mobile2                     String?
+  mobile3                     String?
+  email1                      String?
+  email2                      String?
+  email3                      String?
+  website                     String?
+
+  contactperson               String?
+  gstin                       String?
+  pan                         String?
+  active                      Boolean               @default(true)
+  createdAt                   DateTime              @default(now())
+}
+
+model Taxrate {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  rate                        Decimal               @db.Decimal(10,2) @default(0.0)
+  active                      Boolean               @default(true)
+
+  product                     Product[]
+  createdAt                   DateTime              @default(now())
+}
+
+model Unit {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  remark                      String?
+  active                      Boolean               @default(true)
+  product                     Product[]
+  createdAt                   DateTime              @default(now())
+}
+
+model Product {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  code                        String?
+  description                 String?
+  rate                        Decimal               @db.Decimal(10,2) @default(0.00) 
+  hsn                         String?
+  active                      Boolean               @default(true)
+
+  taxrateId                   Int
+  taxrate                     Taxrate               @relation(fields: [taxrateId], references: [id])
+  unitId                      Int
+  unit                        Unit                  @relation(fields: [unitId], references: [id])
+
+  QuoteDetail                 QuoteDetail[]
+  createdAt                   DateTime              @default(now())
+}
+
+model Ledger {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  address                     String?
+  city                        String?
+  district                    String?
+  state                       String?
+  pin                         String?
+  country                     String?
+  
+  mobile1                     String?
+  mobile2                     String?
+  mobile3                     String?
+  email1                      String?
+  email2                      String?
+  email3                      String?
+  website                     String?
+
+  contactperson               String?
+  gstin                       String?
+  pan                         String?
+  active                      Boolean               @default(true)
+
+  Quote                       Quote[]
+  createdAt                   DateTime              @default(now())
+}
+
+model TermsAndCondition {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  termsandconditions          String?
+  active                      Boolean               @default(true)
+  Quote                       Quote[]
+  createdAt                   DateTime              @default(now())
+}
+
+model QuoteAprovalStatusL1 {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  remark                      String?
+  active                      Boolean               @default(true)
+  createdAt                   DateTime              @default(now())
+  QuoteDetail                 QuoteDetail[]
+}
+
+model QuoteAprovalStatusL2 {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  remark                      String?
+  active                      Boolean               @default(true)
+  createdAt                   DateTime              @default(now())
+  QuoteDetail                 QuoteDetail[]
+}
+
+model QuoteAprovalStatusL3 {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  remark                      String?
+  active                      Boolean               @default(true)
+  createdAt                   DateTime              @default(now())
+  QuoteDetail                 QuoteDetail[]
+}
+
+model QuoteAprovalStatusL4 {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  remark                      String?
+  active                      Boolean               @default(true)
+  createdAt                   DateTime              @default(now())
+  QuoteDetail                 QuoteDetail[]
+}
+
+model QuoteAprovalStatusL5 {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  remark                      String?
+  active                      Boolean               @default(true)
+  createdAt                   DateTime              @default(now())
+  QuoteDetail                 QuoteDetail[]
+}
+
+model SaleType {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique          
+  active                      Boolean               @default(true)
+
+  Quote                       Quote[]
+  createdAt                   DateTime              @default(now())
+}
+
+model Quote {
+  id                          Int                   @id @default(autoincrement())
+  quoteno                     Int?          
+  versionno                   Int?                  @default(1)
+  quotedate                   DateTime?             @default(now())
+  status                      Int                   @default(1)
+  ledgerId                    Int
+  termsAndConditionId         Int
+  saleTypeId                  Int                   @default(1)
+  ledger                      Ledger                @relation(fields: [ledgerId], references: [id])
+  termsAndCondition           TermsAndCondition     @relation(fields: [termsAndConditionId], references: [id])
+  saleType                    SaleType              @relation(fields: [saleTypeId], references: [id])
+  
+  totalBeforeTax             Decimal               @db.Decimal(10,2) @default(0.00)
+  totalGST                   Decimal               @db.Decimal(10,2) @default(0.00)
+  totalAfterTax              Decimal               @db.Decimal(10,2) @default(0.00)
+  quoteItem                   QuoteDetail[]
+  createdAt                   DateTime              @default(now())
+}
+
+model QuoteDetail {
+  id                          Int                   @id @default(autoincrement())
+  quantity                    Decimal               @db.Decimal(10,2) @default(0.00)
+  rate                        Decimal               @db.Decimal(10,2) @default(0.00)
+  amountBeforeTax             Decimal               @db.Decimal(10,2) @default(0.00)
+  gstAmount                   Decimal               @db.Decimal(10,2) @default(0.00)
+  amountAfterTax              Decimal               @db.Decimal(10,2) @default(0.00)
+  
+  quoteId                     Int
+  productId                   Int
+  quoteItem                   Quote                 @relation(fields: [quoteId], references: [id])
+  product                     Product               @relation(fields: [productId], references: [id])
+  
+  quoteApprovalStatusL1Id     Int                   @default(1)
+  quoteApprovalStatusL2Id     Int                   @default(1)
+  quoteApprovalStatusL3Id     Int                   @default(1)
+  quoteApprovalStatusL4Id     Int                   @default(1)
+  quoteApprovalStatusL5Id     Int                   @default(1)
+  quoteApprovalStatusL1       QuoteAprovalStatusL1  @relation(fields: [quoteApprovalStatusL1Id], references: [id])
+  quoteApprovalStatusL2       QuoteAprovalStatusL2  @relation(fields: [quoteApprovalStatusL2Id], references: [id])
+  quoteApprovalStatusL3       QuoteAprovalStatusL3  @relation(fields: [quoteApprovalStatusL3Id], references: [id])
+  quoteApprovalStatusL4       QuoteAprovalStatusL4  @relation(fields: [quoteApprovalStatusL4Id], references: [id])
+  quoteApprovalStatusL5       QuoteAprovalStatusL5  @relation(fields: [quoteApprovalStatusL5Id], references: [id])
+  
+  createdAt                   DateTime              @default(now())
+}
+
+model AdjustmentType {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  remark                      String?
+  active                      Boolean               @default(true)
+//  rateAdjustment RateAdjustment[]
+  createdAt                   DateTime              @default(now())
+}
+
+model AdjustmentEffect {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  remark                      String?
+  active                      Boolean               @default(true)
+//  rateAdjustment RateAdjustment[]
+  createdAt                   DateTime              @default(now())
+}
+
+model RateAdjustment {
+  id                          Int                   @id @default(autoincrement())
+  code                        String                @unique
+  name                        String
+  remark                      String?
+  active                      Boolean               @default(true)
+//  adjustmentType      AdjustmentType          @relation(fields: [adjustmentTypeId], references: [id])
+//  adjustmentEffect    AdjustmentEffect        @relation(fields: [adjustmentEffectId], references: [id])
+  adjustmentTypeId            Int            //         @unique
+  adjustmentEffectId          Int              //       @unique
+//  rateAdjustment      RateCalculationDetail[]
+  createdAt                   DateTime              @default(now())
+}
+
+model RateCalculation {
+  id                          Int                   @id @default(autoincrement())
+  name                        String                @unique
+  remark                      String?
+  active                      Boolean               @default(true)
+//  rateCalculation   RateCalculationDetail[]
+  createdAt DateTime        @default(now())
+}
+
+model RateCalculationDetail {
+  id                          Int                   @id @default(autoincrement())
+  value                       Decimal               @db.Decimal(10,2) @default(0.00)
+  remark                      String?
+//  rateAdjustment    RateAdjustment  @relation(fields: [rateAdjustmentId], references: [id])
+  rateAdjustmentId            Int             //@unique
+//  rateCalculation   RateCalculation @relation(fields: [rateCalculationId], references: [id])
+  rateCalculationId           Int            // @unique
+  createdAt                   DateTime              @default(now())
+}
+
